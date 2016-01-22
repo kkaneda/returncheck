@@ -97,20 +97,22 @@ func (v *visitor) Visit(node ast.Node) ast.Visitor {
 	case *ast.DeferStmt:
 		v.recordUnchecked(stmt.Call, -1)
 	case *ast.AssignStmt:
-		// Find "_" in the left-hand side of the assigments and check if the corressponding
-		// right-hand side expression is a call that returns the target type.
-		for i := 0; i < len(stmt.Lhs); i++ {
-			if id, ok := stmt.Lhs[i].(*ast.Ident); ok && id.Name == "_" {
-				var rhs ast.Expr
-				if len(stmt.Rhs) == 1 {
-					// ..., stmt.Lhs[i], ... := stmt.Rhs[0]
-					rhs = stmt.Rhs[0]
-				} else {
-					// ..., stmt.Lhs[i], ... := ..., stmt.Rhs[i], ...
-					rhs = stmt.Rhs[i]
-				}
-				if call, ok := rhs.(*ast.CallExpr); ok {
-					v.recordUnchecked(call, i)
+		if len(stmt.Lhs) != 1 || len(stmt.Rhs) != 1 {
+			// Find "_" in the left-hand side of the assigments and check if the corressponding
+			// right-hand side expression is a call that returns the target type.
+			for i := 0; i < len(stmt.Lhs); i++ {
+				if id, ok := stmt.Lhs[i].(*ast.Ident); ok && id.Name == "_" {
+					var rhs ast.Expr
+					if len(stmt.Rhs) == 1 {
+						// ..., stmt.Lhs[i], ... := stmt.Rhs[0]
+						rhs = stmt.Rhs[0]
+					} else {
+						// ..., stmt.Lhs[i], ... := ..., stmt.Rhs[i], ...
+						rhs = stmt.Rhs[i]
+					}
+					if call, ok := rhs.(*ast.CallExpr); ok {
+						v.recordUnchecked(call, i)
+					}
 				}
 			}
 		}
