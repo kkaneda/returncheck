@@ -17,4 +17,5 @@ func ExampleRun() {
 	// testdata/test.go:24:11	x, _ := h()
 	// testdata/test.go:29:6	go g()
 	// testdata/test.go:30:9	defer h()
+	// failed to run return check: found an unchecked return value
 }
