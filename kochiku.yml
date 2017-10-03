@@ -1,0 +1,7 @@
+test_command: 'script/ci'
+
+partitioner: go
+
+- type: test
+  workers: 10
+  retry_count: 1
